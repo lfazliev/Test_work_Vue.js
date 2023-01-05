@@ -3,8 +3,10 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import { loadFonts } from './plugins/webfontloader'
 import { binanceSdk } from './core/binance-sdk'
+import eventBus from './core/event-bus'
 loadFonts()
 createApp(App)
+  .use(eventBus)
   .use(binanceSdk)
   .use(vuetify)
   .mount('#app')

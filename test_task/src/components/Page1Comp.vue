@@ -1,6 +1,7 @@
 <template>
     <div>
-        This is Page 1.
+        <v-btn @click="even()">событие</v-btn>
+        <p>{{ checkevent }}</p>
     </div>
 </template>
 
@@ -9,9 +10,18 @@ export default {
     name: 'Page1',
     data() {
         return {
-            // data properties go here
+            checkevent: ''
         }
     },
+    methods: {
+        even() {
+            let data = 'color123'
+            this.$bus.emit('testevent', { a: 'bre' })
+        }
+    },
+    mounted() {
+        this.$bus.on('testevent', e => this.checkevent = e)
+    }
 
 }
 </script>

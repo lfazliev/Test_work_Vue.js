@@ -17,8 +17,6 @@ export default {
         check() {
             this.col = []
             this.$binance.getOrderBook('BTCUSDT').then(data => {
-
-
                 this.col.push(data.asks)
                 this.col.push('dfdgsfdfdfsdgsdfg')
                 this.col.push(data.bids)
