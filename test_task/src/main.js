@@ -1,11 +1,10 @@
 import { createApp } from 'vue'
-import { createPinia } from 'pinia'
 import App from './App.vue'
-
-import './assets/main.css'
-
-const app = createApp(App)
-
-app.use(createPinia())
-
-app.mount('#app')
+import vuetify from './plugins/vuetify'
+import { loadFonts } from './plugins/webfontloader'
+import { binanceSdk } from './core/binance-sdk'
+loadFonts()
+createApp(App)
+  .use(binanceSdk)
+  .use(vuetify)
+  .mount('#app')

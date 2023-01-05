@@ -14,23 +14,27 @@
 
 <script>
 import { defineComponent } from 'vue'
-export default defineComponent({
-  name: 'App',
+import Page1 from './components/Page1Comp.vue'
+import Page2 from './components/Page2Comp.vue'
+//const Page2 = defineAsyncComponent(() => import('./components/Page2Comp.vue')) // так импортируются асинхронные компоненты
+//defineAsyncComponent is not defined
+export default {
   data() {
     return {
-      currentPage: null
+      currentPage: Page1
     }
   },
   methods: {
-    async navigateToPage(page) {
+    sdk() {
+      this.$vuetify
+    },
+    navigateToPage(page) {
       if (page === 'page1') {
-        const Page1Comp = await import('./components/Page1Comp.vue')
-        this.currentPage = Page1Comp
+        this.currentPage = Page1
       } else if (page === 'page2') {
-        const Page2Comp = await import('./components/Page2Comp.vue')
-        this.currentPage = Page2Comp
+        this.currentPage = Page2
       }
     }
-  }
-})
+  },
+}
 </script>

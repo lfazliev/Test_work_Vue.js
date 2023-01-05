@@ -1,20 +1,17 @@
 <template>
     <div>
-        <h1>1</h1>
+        This is Page 1.
     </div>
 </template>
 
 <script>
-
 export default {
-    name: 'App',
+    name: 'Page1',
     data() {
         return {
-
+            // data properties go here
         }
     },
-    methods: {
 
-    }
 }
 </script>
