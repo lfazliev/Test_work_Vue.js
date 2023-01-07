@@ -4,6 +4,7 @@ import vuetify from './plugins/vuetify'
 import { loadFonts } from './plugins/webfontloader'
 import { binanceSdk } from './core/binance-sdk'
 import eventBus from './core/event-bus'
+import './assets/main.css'
 loadFonts()
 createApp(App)
   .use(eventBus)
