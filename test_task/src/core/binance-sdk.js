@@ -8,8 +8,16 @@ export const binanceSdk = {
                     .then(response => response.json())
             },
             subscribe(symbol) {
-                const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@depth`)
-                ws.onmessage = onMessage
+                const ws = new window.WebSocket(`wss://stream.binance.com:9443/ws`)
+                ws.onopen = function (event) {
+                    console.log("WebSocket connection established")
+                    ws.send(JSON.stringify({ "method": "SUBSCRIBE", "params": [`${symbol.toLowerCase()}@depth`], "id": 1 }))
+                }
+                ws.onmessage = (event) => {
+                    if (event.type == 'ping')
+                        ws.send('pong')
+                    //`${symbol.toLowerCase()}@aggTrade`,
+                }
                 return ws
             }
         }
