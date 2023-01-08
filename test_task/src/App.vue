@@ -6,9 +6,9 @@
       <v-btn @click="navigateToPage('page1')" text>Page 1</v-btn>
       <v-btn @click="navigateToPage('page2')" text>Page 2</v-btn>
     </v-toolbar>
-    <v-content>
+    <keep-alive>
       <component :is="currentPage" />
-    </v-content>
+    </keep-alive>
   </v-app>
 </template>
 
