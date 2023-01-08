@@ -11,8 +11,8 @@
                         <th>Total</th>
                     </tr>
                 </div>
-                <div class="w-100 h-95 tbody">
-                    <!-- <v-virtual-scroll height="100">
+                <div class="w-100 tbody">
+                    <v-virtual-scroll height="100">
                         <template class=flex v-for="bid of bids">
                             <div class='d-flex'>
                                 <div>{{ bid[0] }}</div>
@@ -20,7 +20,7 @@
                                 <div>{{ (bid[0] * bid[1]).toFixed(5) }}</div>
                             </div>
                         </template>
-                    </v-virtual-scroll> -->
+                    </v-virtual-scroll>
                 </div>
             </div>
 
@@ -67,49 +67,31 @@ export default {
     },
     methods: {
         compareArrays(data, event) {
-            let j = 0;
-            while (j < event.length) {
-                let i = 0;
-                let checkAvailability = false
-                while (i < data.length) {
-                    if (data.length > 5000) {
-                        let minIndex = 0;
-                        let minValue = data[0][2];
-                        for (let i = 0; i < data.length; i++) {
-                            if (data[i][2] == undefined) {
-                                minIndex = i;
-                                break;
-                            }
-                            else if (data[i][2] < minValue) {
-                                minIndex = i;
-                                minValue = data[i][2];
-                            }
-                        }
-                        data.splice(minIndex, 1);
-                        i = (i = 0) ? 0 : i--;
-                    }
-                    if (data[i][0] == event[j][0]) {
-                        checkAvailability = true
-                        if (Number(event[j][1]) == 0) {
-                            event.splice(j, 1);
-                            j = (j = 0) ? 0 : j--;
-                            data.splice(i, 1);
-                            i = (i = 0) ? 0 : i--;
-                        }
-                        else {
-                            data.splice(i, 1);
-                            i = (i = 0) ? 0 : i--;
-                        }
-                    }
-                    i++
+            for (let i = 0; i < event.length; i++) {
+                const index = data.findIndex(d => d[0] == event[i][0]);
+                if (index >= 0) {
+                    data.splice(index, 1);
                 }
-                if (checkAvailability == false && Number(event[j][1]) == 0) {
-                    event.splice(j, 1)
-                    j = (j != 0) ? 0 : j--;
+                if (Number(event[i][1]) == 0) {
+                    event.splice(i, 1);
+                    i--
                 }
-                j++
             }
-
+            if (data.length > 5000) {
+                let minIndex = 0;
+                let minValue = data[0][2];
+                for (let i = 0; i < data.length; i++) {
+                    if (data[i][2] == undefined) {
+                        minIndex = i;
+                        break;
+                    }
+                    else if (data[i][2] < minValue) {
+                        minIndex = i;
+                        minValue = data[i][2];
+                    }
+                }
+                data.splice(minIndex, 1);
+            }
         },
         checkeventdata(event, data) {
             const buf = event
