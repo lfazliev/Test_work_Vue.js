@@ -11,8 +11,8 @@
                         <th>Total</th>
                     </tr>
                 </div>
-                <div class="w-100 tbody">
-                    <v-virtual-scroll height="100">
+                <div class="w-100 h-95 tbody">
+                    <!-- <v-virtual-scroll height="100">
                         <template class=flex v-for="bid of bids">
                             <div class='d-flex'>
                                 <div>{{ bid[0] }}</div>
@@ -20,7 +20,7 @@
                                 <div>{{ (bid[0] * bid[1]).toFixed(5) }}</div>
                             </div>
                         </template>
-                    </v-virtual-scroll>
+                    </v-virtual-scroll> -->
                 </div>
             </div>
 
@@ -56,33 +56,60 @@ export default {
     name: 'Page1',
     data() {
         return {
+            symbol: 'BTCUSDT',
             bids: null,
             asks: [],
             lastUpdateId: 0,
             buffer: [],
-            test: true,
+            checkFirstE: false,
             ws: null
         }
     },
     methods: {
         compareArrays(data, event) {
-            let i = 0;
-            while (i < data.length) {
-                let j = 0;
-                while (j < event.length) {
+            let j = 0;
+            while (j < event.length) {
+                let i = 0;
+                let checkAvailability = false
+                while (i < data.length) {
+                    if (data.length > 5000) {
+                        let minIndex = 0;
+                        let minValue = data[0][2];
+                        for (let i = 0; i < data.length; i++) {
+                            if (data[i][2] == undefined) {
+                                minIndex = i;
+                                break;
+                            }
+                            else if (data[i][2] < minValue) {
+                                minIndex = i;
+                                minValue = data[i][2];
+                            }
+                        }
+                        data.splice(minIndex, 1);
+                        i = (i = 0) ? 0 : i--;
+                    }
                     if (data[i][0] == event[j][0]) {
-                        data.splice(i, 1);
-                        i--;
-                        break;
+                        checkAvailability = true
+                        if (Number(event[j][1]) == 0) {
+                            event.splice(j, 1);
+                            j = (j = 0) ? 0 : j--;
+                            data.splice(i, 1);
+                            i = (i = 0) ? 0 : i--;
+                        }
+                        else {
+                            data.splice(i, 1);
+                            i = (i = 0) ? 0 : i--;
+                        }
                     }
-                    if (Number(event[j][1]) == 0) {
-                        event.splice(j, 1);
-                        j--;
-                    }
-                    j++;
+                    i++
                 }
-                i++;
+                if (checkAvailability == false && Number(event[j][1]) == 0) {
+                    event.splice(j, 1)
+                    j = (j != 0) ? 0 : j--;
+                }
+                j++
             }
+
         },
         checkeventdata(event, data) {
             const buf = event
@@ -100,9 +127,9 @@ export default {
         },
         eventProcess(event) {
             this.lastUpdateId = event.u
-            this.checkeventdata(event.b, this.bids)
-            console.log(this.bids.length)
-            this.checkeventdata(event.a, this.asks)
+            this.checkeventdata(event.b, this.bids, event.E)
+            console.log(this.bids.length);
+            this.checkeventdata(event.a, this.asks, event.E)
         },
         processBuffer() {
             for (const item in this.buffer) {
@@ -110,11 +137,11 @@ export default {
                     this.buffer.splice(item, 1)
                 }
                 else {
-                    if (this.test) {
+                    if (!this.test) {
                         if (this.buffer[item].U <= (this.lastUpdateId + 1)) {
                             if (this.buffer[item].u >= (this.lastUpdateId + 1)) {
                                 this.eventProcess(this.buffer[item])
-                                this.test = false
+                                this.test = true
                             }
                         }
                     }
@@ -123,31 +150,46 @@ export default {
                             this.eventProcess(this.buffer[item])
                         }
                     }
+                    this.buffer.splice(item, 1)
                 }
             }
+
         },
+        subscribe() {
+            setTimeout(() => {
+                if (this.bids == null) {
+                    this.$binance.getOrderBook(this.symbol).then(data => {
+                        this.bids = data.bids
+                        this.asks = data.asks
+                        this.lastUpdateId = data.lastUpdateId
+                        this.processBuffer()
+                    })
+                }
+            }, 1100)
+        }
     },
     mounted() {
+        this.$bus.on('symbolChange', (symbol) => {
+            this.symbol = symbol
+            this.bids = null
+            this.asks = []
+            this.lastUpdateId = 0
+            this.buffer = []
+            this.checkFirstE = false
+            this.ws = null
+            this.subscribe()
+        })
         if (this.ws == null) {
-            this.ws = this.$binance.subscribe('BTCUSDT')
+            this.ws = this.$binance.subscribe(this.symbol)
         }
         this.ws.onmessage = function (e) {
             const event = JSON.parse(e.data)
             if (event.e === 'depthUpdate') {
                 this.buffer.push(event)
-                this.processBuffer()
+                if (this.lastUpdateId !== 0) { this.processBuffer() }
             }
         }.bind(this)
-        setTimeout(() => {
-            if (this.bids == null) {
-                this.$binance.getOrderBook('BTCUSDT').then(data => {
-                    this.bids = data.bids
-                    this.asks = data.asks
-                    this.lastUpdateId = data.lastUpdateId
-                })
-            }
-        }, 1100)
-
+        this.subscribe()
     }
 }
 
