@@ -13,10 +13,10 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from 'vue'
 import { defineComponent } from 'vue'
-import Page1 from './components/Page1Comp.vue'
-import Page2 from './components/Page2Comp.vue'
-//const Page2 = defineAsyncComponent(() => import('./components/Page2Comp.vue')) // так импортируются асинхронные компоненты
+const Page1 = defineAsyncComponent(() => import('./components/Page1Comp.vue')) // так импортируются асинхронные компоненты
+const Page2 = defineAsyncComponent(() => import('./components/Page2Comp.vue')) // так импортируются асинхронные компоненты
 //defineAsyncComponent is not defined
 export default {
   data() {
