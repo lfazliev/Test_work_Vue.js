@@ -1,12 +1,13 @@
 <template>
-    <!-- <DynamicScroller :items="difflist" :min-item-size="12" class="scroller w-50 overflow-auto" style="height: 90vh;">
-        <template v-slot="{ item, index, active }">
-            <DynamicScrollerItem :item="difflist" :active="active" :size-dependencies="[item,]" :data-index="index"
-                prerender=500 updateInterval=1000>
-                <div class="text">{{ item }}</div>
-            </DynamicScrollerItem>
-        </template>
-    </DynamicScroller> -->
+    <v-container class="d-flex cont h-screen-10">
+        <div class='overflow-auto'>
+            <div v-for="dif of difflist.reverse()">{{
+                dif
+            }}</div>
+        </div>
+        <div><v-combobox @change='symbolChange()' label="Symobol" :items="symbollist" v-model="selsymbol"></v-combobox>
+        </div>
+    </v-container>
 </template>
 
 <script>
@@ -15,24 +16,43 @@ export default defineComponent({
     name: 'Page2',
     data() {
         return {
-            difflist: []
+            difflist: [],
+            selsymbol: 'BTCUSDT',
+            symbollist: ['BTCUSDT', 'BNBBTC', 'ETHBTC']
         }
     },
     methods: {
     },
+    watch: {
+        selsymbol() {
+            this.$bus.emit('symbolChange', this.selsymbol)
+            this.difflist = []
+        }
+    },
     mounted() {
         this.$bus.on('diffChange', (diff) => {
             this.difflist.push(diff)
-            if (this.difflist.length > 3000) {
+            if (this.difflist.length > 10) {
                 this.difflist.shift()
             }
         })
-
     },
 })
 </script>
-<style scoped>
-.scroller {
-    height: 100%;
+<style scoped lang="scss">
+.cont {
+    >div {
+        width: 50%;
+    }
+}
+
+@media screen and (max-width:600px) {
+    .cont {
+        flex-direction: column-reverse;
+
+        >div {
+            width: 100%;
+        }
+    }
 }
 </style>

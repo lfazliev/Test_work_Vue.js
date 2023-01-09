@@ -17,7 +17,6 @@ import { defineAsyncComponent } from 'vue'
 import { defineComponent } from 'vue'
 const Page1 = defineAsyncComponent(() => import('./components/Page1Comp.vue')) // так импортируются асинхронные компоненты
 const Page2 = defineAsyncComponent(() => import('./components/Page2Comp.vue')) // так импортируются асинхронные компоненты
-//defineAsyncComponent is not defined
 export default {
   data() {
     return {

@@ -1,52 +1,44 @@
 <template>
     <div class="h-screen-10 d-flex justify-space-between visscroll">
 
-        <div class='h-100 w-50'>
-            <p>Bids</p>
-            <div class="table w-100 h-100">
-                <div>
-                    <tr class=d-flex>
-                        <th>Price(USDT)</th>
-                        <th>Quantity(BTC)</th>
-                        <th>Total</th>
+        <div class='h-100'>
+            <p>Bids ({{ symbol }})</p>
+            <table class="w-100 h-100 d-flex flex-column">
+                <thead>
+                    <tr class='d-flex'>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th class="total">Total</th>
                     </tr>
-                </div>
-                <div class="w-100 tbody">
-                    <!-- <v-virtual-scroll height="100">
-                        <template class=flex v-for="bid of bids">
-                            <div class='d-flex'>
-                                <div>{{ bid[0] }}</div>
-                                <div>{{ bid[1] }}</div>
-                                <div>{{ (bid[0] * bid[1]).toFixed(5) }}</div>
-                            </div>
-                        </template>
-                    </v-virtual-scroll> -->
-                </div>
-            </div>
+                </thead>
+                <tbody class="w-100 h-95">
+                    <tr class='d-flex' v-for="bid of bids">
+                        <td>{{ bid[0] }}</td>
+                        <td>{{ bid[1] }}</td>
+                        <td class="total">{{ (bid[0] * bid[1]).toFixed(5) }}</td>
+                    </tr>
+                </tbody>
+            </table>
 
         </div>
-        <div class='h-100 w-50'>
-            <p>Asks</p>
-            <div class="table w-100 h-100">
-                <div>
-                    <tr class=d-flex>
-                        <th>Price(USDT)</th>
-                        <th>Quantity(BTC)</th>
-                        <th>Total</th>
+        <div class='h-100'>
+            <p>Asks {{ symbol }}</p>
+            <table class="w-100 h-100 d-flex flex-column">
+                <thead>
+                    <tr class='d-flex'>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th class="total">Total</th>
                     </tr>
-                </div>
-                <div class="w-100 h-95 tbody">
-                    <!-- <v-virtual-scroll height="50">
-                        <template class=flex v-for="bid of bids">
-                            <div class='d-flex'>
-                                <div>{{ bid[0] }}</div>
-                                <div>{{ bid[1] }}</div>
-                                <div>{{ (bid[0] * bid[1]).toFixed(5) }}</div>
-                            </div>
-                        </template>
-                    </v-virtual-scroll> -->
-                </div>
-            </div>
+                </thead>
+                <tbody class="w-100 h-95">
+                    <tr class='d-flex' v-for="ask of asks">
+                        <td>{{ ask[0] }}</td>
+                        <td>{{ ask[1] }}</td>
+                        <td class="total">{{ (ask[0] * ask[1]).toFixed(5) }}</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </template>
@@ -111,7 +103,7 @@ export default defineComponent({
                 }
                 return 0;
             })
-            if (data.length > 1000) {
+            if (data.length > 5000) {
                 while (data.length > 1000) {
                     let minIndex = 0;
                     data.reduce((min, item, index) => {
@@ -160,14 +152,16 @@ export default defineComponent({
             }
 
         },
-        subscribe() {
+        getSnap() {
             setTimeout(() => {
                 if (this.bids == null) {
                     this.$binance.getOrderBook(this.symbol).then(data => {
                         this.bids = data.bids
                         this.asks = data.asks
                         this.lastUpdateId = data.lastUpdateId
-                        this.processBuffer()
+                        if (this.buffer.length > 2) {
+                            this.processBuffer()
+                        }
                     })
                 }
             }, 1100)
@@ -176,6 +170,7 @@ export default defineComponent({
     mounted() {
 
         this.$bus.on('symbolChange', (symbol) => {
+            this.$binance.unsubscribe(this.symbol, this.ws)
             this.symbol = symbol
             this.bids = null
             this.asks = []
@@ -183,7 +178,19 @@ export default defineComponent({
             this.buffer = []
             this.checkFirstE = false
             this.ws = null
-            this.subscribe()
+            this.getSnap()
+            this.ws = this.$binance.subscribe(this.symbol)
+            this.ws.onmessage = function (e) {
+                const event = JSON.parse(e.data)
+                if (event.e === 'depthUpdate') {
+                    this.buffer.push(event)
+                    if (this.lastUpdateId !== 0) {
+                        if (this.buffer.length > 2) {
+                            this.processBuffer()
+                        }
+                    }
+                }
+            }.bind(this)
         })
         if (this.ws == null) {
             this.ws = this.$binance.subscribe(this.symbol)
@@ -192,11 +199,95 @@ export default defineComponent({
             const event = JSON.parse(e.data)
             if (event.e === 'depthUpdate') {
                 this.buffer.push(event)
-                if (this.lastUpdateId !== 0) { this.processBuffer() }
+                if (this.lastUpdateId !== 0) {
+                    if (this.buffer.length > 2) {
+                        this.processBuffer()
+                    }
+                }
             }
         }.bind(this)
-        this.subscribe()
+        this.getSnap()
     }
 })
 
 </script>
+<style scoped lang = 'scss'>
+@media screen and (max-width:600px) {
+    .visscroll {
+        flex-direction: column;
+
+        >div {
+            width: 100% !important;
+        }
+    }
+}
+
+.visscroll {
+    >div {
+        width: 50%;
+
+        >p {
+            text-align: center;
+        }
+
+        table {
+            ::-webkit-scrollbar-thumb {
+                background-color: #000000;
+                border-radius: 10px;
+                -webkit-transition: all 0.2s ease-in-out;
+                transition: all 0.2s ease-in-out;
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background-color: #939393;
+            }
+
+            ::-webkit-scrollbar {
+                width: 10px;
+            }
+
+            >tbody {
+                scrollbar-gutter: stable;
+
+
+
+                overflow: hidden
+            }
+
+            >tbody:hover {
+                overflow-y: scroll
+            }
+
+            @media screen and (max-width:800px) {
+                tr {
+                    .total {
+                        display: none;
+                        width: 0%;
+                    }
+
+                    >td,
+                    >th {
+                        text-align: center;
+                        width: 50% !important;
+                    }
+                }
+            }
+
+            @media screen and (max-width:800px) {
+                .total {
+                    display: none;
+                }
+            }
+
+            tr {
+
+                >td,
+                >th {
+                    text-align: center;
+                    width: 33.3%;
+                }
+            }
+        }
+    }
+}
+</style>

@@ -16,9 +16,11 @@ export const binanceSdk = {
                 ws.onmessage = (event) => {
                     if (event.type == 'ping')
                         ws.send('pong')
-                    //`${symbol.toLowerCase()}@aggTrade`,
                 }
                 return ws
+            },
+            unsubscribe(symbol, ws) {
+                ws.send(JSON.stringify({ "method": "UNSUBSCRIBE", "params": [`${symbol.toLowerCase()}@depth`], "id": 312 }))
             }
         }
     }
