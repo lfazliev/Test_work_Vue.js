@@ -1,8 +1,8 @@
 <template>
     <v-container class="d-flex cont h-screen-10">
         <div class='overflow-auto'>
-            <div v-for="dif of difflist.reverse()">{{
-                dif
+            <div v-for="diff of difflist">{{
+                diff
             }}</div>
         </div>
         <div><v-combobox @change='symbolChange()' label="Symobol" :items="symbollist" v-model="selsymbol"></v-combobox>
@@ -31,9 +31,10 @@ export default defineComponent({
     },
     mounted() {
         this.$bus.on('diffChange', (diff) => {
-            this.difflist.push(diff)
-            if (this.difflist.length > 10) {
-                this.difflist.shift()
+            // console.log(diff);
+            this.difflist.unshift(diff)
+            if (this.difflist.length > 200) {
+                this.difflist.pop()
             }
         })
     },

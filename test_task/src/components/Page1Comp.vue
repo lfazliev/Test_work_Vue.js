@@ -164,7 +164,7 @@ export default defineComponent({
                         }
                     })
                 }
-            }, 1100)
+            }, 2500)
         }
     },
     mounted() {
