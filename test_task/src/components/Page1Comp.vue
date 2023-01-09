@@ -94,15 +94,7 @@ export default defineComponent({
             const buf = event
             this.compareArrays(data, buf, E, pol)
             data.push(...buf)
-            data.sort((a, b) => {
-                if (a[0] < b[0]) {
-                    return -1;
-                }
-                if (a.name > b.name) {
-                    return 1;
-                }
-                return 0;
-            })
+            data.sort((a, b) => b[0] - a[0])
             if (data.length > 5000) {
                 while (data.length > 1000) {
                     let minIndex = 0;
