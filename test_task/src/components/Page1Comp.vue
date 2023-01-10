@@ -246,9 +246,6 @@ export default defineComponent({
 
             >tbody {
                 scrollbar-gutter: stable;
-
-
-
                 overflow: hidden
             }
 

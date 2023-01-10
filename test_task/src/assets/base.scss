@@ -22,50 +22,20 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-@media (any-pointer: fine) {
+@media (hover: none) and (pointer: coarse) {
   .listmobile {
     > .diffcont,
     tbody {
-      overflow-y: scroll;
-    }
-    ::-webkit-scrollbar {
-      width: auto;
-    }
-    ::-webkit-scrollbar-track {
-      -webkit-box-shadow: auto;
-      -webkit-border-radius: auto;
-      border-radius: auto;
-      background: auto;
-    }
-    ::-webkit-scrollbar-thumb {
-      -webkit-border-radius: auto;
-      border-radius: auto;
-      background: auto;
-      -webkit-box-shadow: auto;
+      overflow-y: scroll !important;
     }
   }
 }
 
-@media (any-pointer: coarse) {
+@media (hover: none) and (pointer: coarse) {
   .listmobile {
     > .diffcont,
     tbody {
-      overflow-y: scroll;
-    }
-    ::-webkit-scrollbar {
-      width: auto;
-    }
-    ::-webkit-scrollbar-track {
-      -webkit-box-shadow: auto;
-      -webkit-border-radius: auto;
-      border-radius: auto;
-      background: auto;
-    }
-    ::-webkit-scrollbar-thumb {
-      -webkit-border-radius: auto;
-      border-radius: auto;
-      background: auto;
-      -webkit-box-shadow: auto;
+      overflow-y: scroll !important;
     }
   }
 }
