@@ -3,7 +3,7 @@
 
         <div class='h-100'>
             <p>Bids ({{ symbol }})</p>
-            <table class="w-100 h-100 d-flex flex-column">
+            <table class="w-100 h-100 d-flex flex-column listmobile">
                 <thead>
                     <tr class='d-flex'>
                         <th>Price</th>
@@ -23,7 +23,7 @@
         </div>
         <div class='h-100'>
             <p>Asks {{ symbol }}</p>
-            <table class="w-100 h-100 d-flex flex-column">
+            <table class="w-100 h-100 d-flex flex-column listmobile">
                 <thead>
                     <tr class='d-flex'>
                         <th>Price</th>
@@ -211,6 +211,12 @@ export default defineComponent({
         >div {
             width: 100% !important;
         }
+
+        table {
+            >tbody {
+                height: 90%;
+            }
+        }
     }
 }
 
@@ -262,12 +268,6 @@ export default defineComponent({
                         text-align: center;
                         width: 50% !important;
                     }
-                }
-            }
-
-            @media screen and (max-width:800px) {
-                .total {
-                    display: none;
                 }
             }
 
