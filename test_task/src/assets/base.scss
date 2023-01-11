@@ -31,7 +31,7 @@ body {
   }
 }
 
-@media (hover: none) and (pointer: coarse) {
+@media (hover: none) and (pointer: coarse) and (max-width: 500px) {
   .listmobile {
     > .diffcont,
     tbody {

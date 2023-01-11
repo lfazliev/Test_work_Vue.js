@@ -157,6 +157,22 @@ export default defineComponent({
                     })
                 }
             }, 2500)
+        },
+        getWS() {
+            if (this.ws == null) {
+                this.ws = this.$binance.subscribe(this.symbol)
+            }
+            this.ws.onmessage = function (e) {
+                const event = JSON.parse(e.data)
+                if (event.e === 'depthUpdate' && event.s == this.symbol) {
+                    this.buffer.push(event)
+                    if (this.lastUpdateId !== 0) {
+                        if (this.buffer.length > 2) {
+                            this.processBuffer()
+                        }
+                    }
+                }
+            }.bind(this)
         }
     },
     mounted() {
@@ -171,34 +187,10 @@ export default defineComponent({
             this.checkFirstE = false
             this.ws = null
             this.getSnap()
-            this.ws = this.$binance.subscribe(this.symbol)
-            this.ws.onmessage = function (e) {
-                const event = JSON.parse(e.data)
-                if (event.e === 'depthUpdate') {
-                    this.buffer.push(event)
-                    if (this.lastUpdateId !== 0) {
-                        if (this.buffer.length > 2) {
-                            this.processBuffer()
-                        }
-                    }
-                }
-            }.bind(this)
+            this.getWS()
         })
-        if (this.ws == null) {
-            this.ws = this.$binance.subscribe(this.symbol)
-        }
-        this.ws.onmessage = function (e) {
-            const event = JSON.parse(e.data)
-            if (event.e === 'depthUpdate') {
-                this.buffer.push(event)
-                if (this.lastUpdateId !== 0) {
-                    if (this.buffer.length > 2) {
-                        this.processBuffer()
-                    }
-                }
-            }
-        }.bind(this)
         this.getSnap()
+        this.getWS()
     }
 })
 
