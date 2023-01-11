@@ -14,7 +14,6 @@
 
 <script>
 import { defineAsyncComponent } from 'vue'
-import { defineComponent } from 'vue'
 const Page1 = defineAsyncComponent(() => import('./components/Page1Comp.vue')) // так импортируются асинхронные компоненты
 const Page2 = defineAsyncComponent(() => import('./components/Page2Comp.vue')) // так импортируются асинхронные компоненты
 export default {
@@ -37,3 +36,11 @@ export default {
   },
 }
 </script>
+<style scoped lang = scss>
+@media screen and (max-width: 460px) {
+  .v-toolbar-title {
+    display: none;
+  }
+
+}
+</style>

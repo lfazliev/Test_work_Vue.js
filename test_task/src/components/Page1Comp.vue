@@ -12,7 +12,7 @@
                     </tr>
                 </thead>
                 <tbody class="w-100 h-95">
-                    <tr class='d-flex' v-for="bid of bids">
+                    <tr class='d-flex' v-for="bid of bids" :key="bid">
                         <td>{{ bid[0] }}</td>
                         <td>{{ bid[1] }}</td>
                         <td class="total">{{ (bid[0] * bid[1]).toFixed(5) }}</td>
@@ -96,7 +96,7 @@ export default defineComponent({
             data.push(...buf)
             data.sort((a, b) => b[0] - a[0])
             if (data.length > 5000) {
-                while (data.length > 1000) {
+                while (data.length > 5000) {
                     let minIndex = 0;
                     data.reduce((min, item, index) => {
                         if (item[2] === undefined) {

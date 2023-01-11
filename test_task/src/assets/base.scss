@@ -22,7 +22,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-@media (hover: none) and (pointer: coarse) {
+@media (hover: none) {
   .listmobile {
     > .diffcont,
     tbody {
@@ -31,7 +31,7 @@ body {
   }
 }
 
-@media (hover: none) and (pointer: coarse) and (max-width: 500px) {
+@media (hover: none) {
   .listmobile {
     > .diffcont,
     tbody {
