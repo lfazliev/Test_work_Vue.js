@@ -11,7 +11,7 @@ export const binanceSdk = {
                 const ws = new window.WebSocket(`wss://stream.binance.com:9443/ws`)
                 ws.onopen = function (event) {
                     console.log("WebSocket connection established")
-                    ws.send(JSON.stringify({ "method": "SUBSCRIBE", "params": [`${symbol.toLowerCase()}@depth`], "id": 1 }))
+                    ws.send(JSON.stringify({ "method": "SUBSCRIBE", "params": [`${symbol.toLowerCase()}@depth@100ms`], "id": 1 }))
                 }
                 ws.onmessage = (event) => {
                     if (event.type == 'ping')
@@ -20,7 +20,7 @@ export const binanceSdk = {
                 return ws
             },
             unsubscribe(symbol, ws) {
-                ws.send(JSON.stringify({ "method": "UNSUBSCRIBE", "params": [`${symbol.toLowerCase()}@depth`], "id": 312 }))
+                ws.send(JSON.stringify({ "method": "UNSUBSCRIBE", "params": [`${symbol.toLowerCase()}@depth@100ms`], "id": 312 }))
             }
         }
     }
